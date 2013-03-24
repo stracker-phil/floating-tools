@@ -339,6 +339,8 @@
 					var editor_id = editor.ui.spaceId( 'contents' );
 					var obj = CKEDITOR.document.getById( editor_id );
 					editor.floatingtools.editoroffset = calc_offset(obj);
+					editor.floatingtools.editoroffset.width = obj.$.offsetWidth;
+					editor.floatingtools.editoroffset.height = obj.$.offsetHeight;
 				}
 				return editor.floatingtools.editoroffset;
 			}
@@ -347,17 +349,26 @@
 			/**
 			 * Calculates the position for the toolbar
 			 */
-			calculate_position = function(pos, size, offset) {
+			calculate_position = function(pos, toolbar_size, offset) {
 				toolpos = {
-					x: pos.left + offset.left - (size.width/2),
-					y: pos.top + offset.top - (size.height + 20)
+					x: pos.left + offset.left - (toolbar_size.width/2),
+					y: pos.top + offset.top - (toolbar_size.height + 20)
 				}
 
-				if (toolpos.x < offset.left) toolpos.x = offset.left;
+				// make sure toolbar does not extend out of the left CKEditor border
+				if (toolpos.x < offset.left + 2) toolpos.x = offset.left + 2;
+
+				// make sure toolbar does not extend out of the right CKEditor border
+				if (pos.left + (toolbar_size.width/2) >= offset.left + offset.width-2 )
+					toolpos.x = offset.left + offset.width - toolbar_size.width - 2;
+
+				// Make sure toolbar does no go into the top toolbar area
 				if (toolpos.y < offset.top) toolpos.y = offset.top;
+
+				// make sure toolbar does not cover the mouse-cursor when text in the top line is selected
 				if (offset.top+pos.top > toolpos.y
-				&& offset.top+pos.top < toolpos.y+size.height)
-					toolpos.y = offset.top+pos.top + 20;
+				&& offset.top+pos.top < toolpos.y+toolbar_size.height)
+					toolpos.y = offset.top + pos.top + 24; // display toolbar below the cursor
 
 				return toolpos;
 			}
