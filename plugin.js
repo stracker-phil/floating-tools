@@ -1,3 +1,8 @@
+/**
+ * Floating-Tools
+ * Author: Philipp Stracker (2013)
+ * Project page: http://stracker-phil.github.com/Floating-Tools/
+ */
 (function() {
 
 	var floatingtools = function() {
