@@ -308,8 +308,8 @@
 			 */
 			set_mousepos = function(data) {
 				editor.floatingtools.mousepos = {
-					left: data.x,
-					top: data.y
+					left: data.clientX,
+					top: data.clientY
 				};
 			}
 
