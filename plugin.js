@@ -10,6 +10,8 @@
 		this.toolbars = [];
 		this.is_visible = false;
 
+		this.hide_on_blur = true; //!TODO: Make this an configuration option
+
 		this.toolbarsize = false;
 		this.editoroffset = false;
 		this.mousepos = {x:0, y:0};
@@ -235,6 +237,16 @@
 
 
 				/**
+				 * On blur hide the toolbar (editor looses focus)
+				 */
+				editor.on('blur', function( e ) {
+					if (editor.floatingtools.hide_on_blur) {
+						hide_toolbar();
+					}
+				});
+
+
+				/**
 				 * Attach the mouse-over event to the toolbar.
 				 * When cursor is above the toolbar then set opacity to 1
 				 */
@@ -289,11 +301,7 @@
 			 */
 			editor.addCommand( 'hideFloatingTools', {
 				exec : function( editor ) {
-					if (false != editor.floatingtools.is_visible) {
-						toolbar = get_element();
-						toolbar.hide();
-						editor.floatingtools.is_visible = false;
-					}
+					hide_toolbar();
 				}
 			});
 
@@ -301,6 +309,15 @@
 			/**
 			 * ===== Behind the scenes. Getters, setters, calculation, etc.
 			 */
+
+
+			hide_toolbar = function() {
+				if (false != editor.floatingtools.is_visible) {
+					toolbar = get_element();
+					toolbar.hide();
+					editor.floatingtools.is_visible = false;
+				}
+			}
 
 
 			/**
@@ -396,20 +413,52 @@
 
 			/**
 			 * Returns the absolute offset of the specified element on the page.
+			 * 31.03.2013: It seems that the obj.$.parent element is not supported always (maybe
+			 *             related to html5, etc?). So we use more stable calculation...
 			 */
 			calc_offset = function(obj) {
 				var pos_left = 0, pos_top = 0;
-
-				do {
-					if (typeof obj == 'undefined') break;
-					pos_left += obj.$.offsetLeft;
-					pos_top  += obj.$.offsetTop;
-				} while (obj = obj.$.parent);
+				pos = find_pos(obj.$, true);
 
 				return {
-					left: pos_left,
-					top: pos_top
+					left: pos[0],
+					top: pos[1]
 				};
+			}
+
+
+			/**
+			 * Implement more stable offset-calculation
+			 * Source: http://stackoverflow.com/a/14387497/313501
+			 * @since 31.03.2013
+			 */
+			function find_pos(obj, stay_in_frame) {
+				var curleft = 0;
+				var curtop = 0;
+				if(obj.offsetLeft) curleft += parseInt(obj.offsetLeft);
+				if(obj.offsetTop) curtop += parseInt(obj.offsetTop);
+				if(obj.scrollTop && obj.scrollTop > 0) curtop -= parseInt(obj.scrollTop);
+
+				if(obj.offsetParent) {
+					var pos = find_pos(obj.offsetParent, stay_in_frame);
+					curleft += pos[0];
+					curtop += pos[1];
+				} else
+				// When param "stay_in_frame" is false then go outside the current iframe and include the iframe offset
+				if(!stay_in_frame && obj.ownerDocument) {
+					var thewindow = obj.ownerDocument.defaultView;
+					if(!thewindow && obj.ownerDocument.parentWindow)
+					thewindow = obj.ownerDocument.parentWindow;
+					if(thewindow) {
+						if(thewindow.frameElement) {
+							var pos = find_pos(thewindow.frameElement, stay_in_frame);
+							curleft += pos[0];
+							curtop += pos[1];
+						}
+					}
+				}
+
+				return [curleft,curtop];
 			}
 
 
