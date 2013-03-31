@@ -43,6 +43,7 @@
 				var output = [
 					// Did not find a nicer way to include the CSS required for the toolbar...
 					'<style>',
+					'.pos-relative {position:relative}',
 					'.cke_floatingtools{',
 						'position:absolute;',
 						'left:0;',
@@ -262,6 +263,9 @@
 				toolbar.on('mouseout', function( mouse_event ) {
 					unfocus_toolbar();
 				})
+
+				editor.container.addClass('pos-relative');
+				console.log(editor.container);
 			});
 
 
@@ -360,9 +364,12 @@
 				if (! editor.floatingtools.editoroffset) {
 					var editor_id = editor.ui.spaceId( 'contents' );
 					var obj = CKEDITOR.document.getById( editor_id );
-					editor.floatingtools.editoroffset = calc_offset(obj);
-					editor.floatingtools.editoroffset.width = obj.$.offsetWidth;
-					editor.floatingtools.editoroffset.height = obj.$.offsetHeight;
+					editor.floatingtools.editoroffset = {
+						left:   obj.$.offsetLeft,
+						top:    obj.$.offsetTop,
+						width:  obj.$.offsetWidth,
+						height: obj.$.offsetHeight
+					};
 				}
 				return editor.floatingtools.editoroffset;
 			}
@@ -408,57 +415,6 @@
 					};
 				}
 				return editor.floatingtools.toolbarsize;
-			}
-
-
-			/**
-			 * Returns the absolute offset of the specified element on the page.
-			 * 31.03.2013: It seems that the obj.$.parent element is not supported always (maybe
-			 *             related to html5, etc?). So we use more stable calculation...
-			 */
-			calc_offset = function(obj) {
-				var pos_left = 0, pos_top = 0;
-				pos = find_pos(obj.$, true);
-
-				return {
-					left: pos[0],
-					top: pos[1]
-				};
-			}
-
-
-			/**
-			 * Implement more stable offset-calculation
-			 * Source: http://stackoverflow.com/a/14387497/313501
-			 * @since 31.03.2013
-			 */
-			function find_pos(obj, stay_in_frame) {
-				var curleft = 0;
-				var curtop = 0;
-				if(obj.offsetLeft) curleft += parseInt(obj.offsetLeft);
-				if(obj.offsetTop) curtop += parseInt(obj.offsetTop);
-				if(obj.scrollTop && obj.scrollTop > 0) curtop -= parseInt(obj.scrollTop);
-
-				if(obj.offsetParent) {
-					var pos = find_pos(obj.offsetParent, stay_in_frame);
-					curleft += pos[0];
-					curtop += pos[1];
-				} else
-				// When param "stay_in_frame" is false then go outside the current iframe and include the iframe offset
-				if(!stay_in_frame && obj.ownerDocument) {
-					var thewindow = obj.ownerDocument.defaultView;
-					if(!thewindow && obj.ownerDocument.parentWindow)
-					thewindow = obj.ownerDocument.parentWindow;
-					if(thewindow) {
-						if(thewindow.frameElement) {
-							var pos = find_pos(thewindow.frameElement, stay_in_frame);
-							curleft += pos[0];
-							curtop += pos[1];
-						}
-					}
-				}
-
-				return [curleft,curtop];
 			}
 
 
