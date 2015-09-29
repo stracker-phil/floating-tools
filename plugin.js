@@ -215,7 +215,7 @@
 					// When the user clears the selection by single-clicking in the editor then this event is fired before the selection is removed
 					// So we add a short delay to give the browser a chance to remove the selection before we do anything
 					setTimeout( function() {
-						if (is_text_selected()) {
+						if (is_text_selected(editor)) {
 							// Save the current mouse-position
 							set_mousepos (mouse_event.data.$);
 							// when there is text selected after mouse-up: show the toolbar
@@ -242,7 +242,7 @@
 				 */
 				editor.on('blur', function( e ) {
 					if (editor.floatingtools.hide_on_blur) {
-						hide_toolbar();
+						hide_toolbar(editor);
 					}
 				});
 
@@ -251,7 +251,7 @@
 				 * Attach the mouse-over event to the toolbar.
 				 * When cursor is above the toolbar then set opacity to 1
 				 */
-				toolbar = get_element();
+				toolbar = get_element(editor);
 				toolbar.on('mouseover', function( mouse_event ) {
 					focus_toolbar();
 				});
@@ -275,7 +275,7 @@
 			 */
 			editor.addCommand( 'showFloatingTools', {
 				exec : function( editor ) {
-					if (is_text_selected()) {
+					if (is_text_selected(editor)) {
 						toolbar = get_element();
 						unfocus_toolbar();
 						toolbar.show();
@@ -305,7 +305,7 @@
 			 */
 			editor.addCommand( 'hideFloatingTools', {
 				exec : function( editor ) {
-					hide_toolbar();
+					hide_toolbar(editor);
 				}
 			});
 
@@ -317,7 +317,7 @@
 
 			hide_toolbar = function() {
 				if (false != editor.floatingtools.is_visible) {
-					toolbar = get_element();
+					toolbar = get_element(editor);
 					toolbar.hide();
 					editor.floatingtools.is_visible = false;
 				}
@@ -347,7 +347,7 @@
 			/**
 			 * Returns the main toolbar-object (the parent of all items in the floating-toolbar)
 			 */
-			get_element = function() {
+			get_element = function(editor) {
 				if (! editor.floatingtools.dom) {
 					var dom_id = editor.ui.spaceId( 'floatingtools' );
 					editor.floatingtools.dom = CKEDITOR.document.getById( dom_id );
@@ -422,7 +422,7 @@
 			 * Check if text is selected.
 			 * Retrns true when there is at least 1 character selected in the editor
 			 */
-			is_text_selected = function () {
+			is_text_selected = function (editor) {
 				var text = editor.getSelection().getSelectedText();
 				return text != '';
 			}
@@ -432,7 +432,7 @@
 			 * Make the toolbar opaque
 			 */
 			focus_toolbar = function() {
-				obj = get_element();
+				obj = get_element(editor);
 				obj.setOpacity(1);
 			}
 
@@ -441,7 +441,7 @@
 			 * Make the toolbar transparent
 			 */
 			unfocus_toolbar = function() {
-				obj = get_element();
+				obj = get_element(editor);
 				obj.setOpacity(0.25);
 			},
 
@@ -577,6 +577,3 @@
 
 
 })();
-
-
-
