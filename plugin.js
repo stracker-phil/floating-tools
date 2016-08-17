@@ -329,8 +329,8 @@
 			 */
 			set_mousepos = function(data) {
 				editor.floatingtools.mousepos = {
-					left: data.clientX,
-					top: data.clientY
+					left: data.offsetX,
+					top: data.offsetY
 				};
 			}
 
@@ -362,8 +362,7 @@
 			 */
 			get_editor_offset = function() {
 				if (! editor.floatingtools.editoroffset) {
-					var editor_id = editor.ui.spaceId( 'contents' );
-					var obj = CKEDITOR.document.getById( editor_id );
+					var obj = editor.element;
 					editor.floatingtools.editoroffset = {
 						left:   obj.$.offsetLeft,
 						top:    obj.$.offsetTop,
