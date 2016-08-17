@@ -266,7 +266,6 @@
 				})
 
 				editor.container.addClass('pos-relative');
-				console.log(editor.container);
 			});
 
 
