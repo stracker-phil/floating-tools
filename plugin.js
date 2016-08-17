@@ -202,12 +202,13 @@
 			 */
 			editor.on('contentDom', function( event ) {
 
+				var editable = editor.editable();
 				unfocus_toolbar();
 
 				/**
 				 * Attach an eventhandler to the mouse-up event
 				 */
-				editor.document.on('mouseup', function( mouse_event ) {
+				editable.attachListener( editor.document, 'mouseup', function( mouse_event ) {
 					// When user right-clicks, ctrl-clicks, etc. then do not show the toolbar
 					data = mouse_event.data.$;
 					if (data.button !== 0 || data.ctrlKey || data.altKey || data.shiftKey) return true;
@@ -232,7 +233,7 @@
 				 * On keypress we will always hide the toolbar
 				 * The toolbar is only accessible via mouse
 				 */
-				editor.document.on('keyup', function( key_event ) {
+				editable.attachListener( editor.document, 'keyup', function( key_event ) {
 					editor.execCommand('hideFloatingTools');
 				});
 
