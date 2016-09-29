@@ -203,7 +203,7 @@
 			editor.on('contentDom', function( event ) {
 
 				var editable = editor.editable();
-				unfocus_toolbar();
+				unfocus_toolbar(editor);
 
 				/**
 				 * Attach an eventhandler to the mouse-up event
@@ -254,7 +254,7 @@
 				 */
 				toolbar = get_element(editor);
 				toolbar.on('mouseover', function( mouse_event ) {
-					focus_toolbar();
+					focus_toolbar(editor);
 				});
 
 
@@ -262,7 +262,7 @@
 				 * When the mouse moves out of the toolbar then make it transparent again
 				 */
 				toolbar.on('mouseout', function( mouse_event ) {
-					unfocus_toolbar();
+					unfocus_toolbar(editor);
 				})
 
 				editor.container.addClass('pos-relative');
@@ -276,8 +276,8 @@
 			editor.addCommand( 'showFloatingTools', {
 				exec : function( editor ) {
 					if (is_text_selected(editor)) {
-						toolbar = get_element();
-						unfocus_toolbar();
+						toolbar = get_element(editor);
+						unfocus_toolbar(editor);
 						toolbar.show();
 
 						// Get the size of the toolbar
@@ -315,7 +315,7 @@
 			 */
 
 
-			hide_toolbar = function() {
+			hide_toolbar = function(editor) {
 				if (false != editor.floatingtools.is_visible) {
 					toolbar = get_element(editor);
 					toolbar.hide();
@@ -408,7 +408,7 @@
 			 */
 			get_toolbar_size = function() {
 				if (! editor.floatingtools.toolbarsize) {
-					var obj = get_element();
+					var obj = get_element(editor);
 					editor.floatingtools.toolbarsize = {
 						width: obj.$.offsetWidth,
 						height: obj.$.offsetHeight
@@ -431,7 +431,7 @@
 			/**
 			 * Make the toolbar opaque
 			 */
-			focus_toolbar = function() {
+			focus_toolbar = function(editor) {
 				obj = get_element(editor);
 				obj.setOpacity(1);
 			}
@@ -440,7 +440,7 @@
 			/**
 			 * Make the toolbar transparent
 			 */
-			unfocus_toolbar = function() {
+			unfocus_toolbar = function(editor) {
 				obj = get_element(editor);
 				obj.setOpacity(0.25);
 			},
